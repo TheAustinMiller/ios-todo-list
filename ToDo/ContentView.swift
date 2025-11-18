@@ -81,7 +81,7 @@ struct ContentView: View {
                 if isAddingNewTask {
                     HStack {
                         TextField("New task", text: $newTaskTitle)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .textFieldStyle(.plain)
                         
                         Button {
                             addTask()

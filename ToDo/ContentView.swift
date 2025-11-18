@@ -15,46 +15,64 @@ struct ContentView: View {
         Task(title: "Watch football")
     ]
     @State private var completedNum: Int = 0
-    
+
     struct Task: Identifiable {
         let id = UUID()
         var title: String
-        var isCompleted: Bool
-        
-        
-        init (title: String, isCompleted: Bool = false) {
-            self.title = title
-            self.isCompleted = isCompleted
-        }
+        var isCompleted: Bool = false
     }
-    
-    var body: some View {
-        Text("My To-Do List!")
-            .bold()
-        
-        List($tasks) { $task in
-            HStack {
-                Button {
-                    if task.isCompleted {
-                        completedNum -= 1
-                    } else {
-                        completedNum += 1
-                    }
-                    task.isCompleted.toggle()
-                } label: {
-                    Circle()
-                        .fill(task.isCompleted ? Color.green : Color.gray)
-                        .frame(width: 20, height: 20)
-                }
-                Text(task.title)
-                    .strikethrough(task.isCompleted)
+
+    // Delete function updates completedNum if needed
+    func deleteTask(at offsets: IndexSet) {
+        for index in offsets {
+            if tasks[index].isCompleted {
+                completedNum -= 1
             }
         }
-        
-        Text("Completed: \(completedNum)")
+        tasks.remove(atOffsets: offsets)
+    }
+
+    var body: some View {
+        VStack {
+            Text("My To-Do List!")
+                .font(.largeTitle)
+                .bold()
+                .padding()
+
+            List {
+                ForEach($tasks) { $task in
+                    HStack {
+                        // Task toggle button
+                        Button {
+                            if task.isCompleted {
+                                completedNum -= 1
+                            } else {
+                                completedNum += 1
+                            }
+                            task.isCompleted.toggle()
+                        } label: {
+                            Circle()
+                                .fill(task.isCompleted ? Color.green : Color.gray)
+                                .frame(width: 20, height: 20)
+                        }
+
+                        // Task name
+                        Text(task.title)
+                            .strikethrough(task.isCompleted)
+                        
+                        Spacer()
+                    }
+                }
+                .onDelete(perform: deleteTask) // Swipe-to-delete
+            }
+
+            Text("Completed: \(completedNum)")
+                .padding()
+        }
     }
 }
 
 #Preview {
     ContentView()
 }
+

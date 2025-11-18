@@ -15,6 +15,9 @@ struct ContentView: View {
         Task(title: "Watch football")
     ]
     @State private var completedNum: Int = 0
+    @State private var newTaskTitle: String = ""
+    @State private var isAddingNewTask: Bool = false
+
 
     struct Task: Identifiable {
         let id = UUID()
@@ -30,6 +33,15 @@ struct ContentView: View {
             }
         }
         tasks.remove(atOffsets: offsets)
+    }
+    
+    func addTask() {
+        let trimmed = newTaskTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        
+        tasks.append(Task(title: trimmed))
+        newTaskTitle = ""
+        isAddingNewTask = false
     }
 
     var body: some View {
@@ -64,6 +76,32 @@ struct ContentView: View {
                     }
                 }
                 .onDelete(perform: deleteTask) // Swipe-to-delete
+
+                // New task row
+                if isAddingNewTask {
+                    HStack {
+                        TextField("New task", text: $newTaskTitle)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                        
+                        Button {
+                            addTask()
+                        } label: {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                        }
+                    }
+                } else {
+                    Button {
+                        isAddingNewTask = true
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Image(systemName: "plus")
+                                .foregroundColor(.green)
+                            Spacer()
+                        }
+                    }
+                }
             }
 
             Text("Completed: \(completedNum)")

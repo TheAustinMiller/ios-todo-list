@@ -14,6 +14,7 @@ struct ContentView: View {
         Task(title: "Study Swift"),
         Task(title: "Watch football")
     ]
+    @State private var completedNum: Int = 0
     
     struct Task: Identifiable {
         let id = UUID()
@@ -34,6 +35,11 @@ struct ContentView: View {
         List($tasks) { $task in
             HStack {
                 Button {
+                    if task.isCompleted {
+                        completedNum -= 1
+                    } else {
+                        completedNum += 1
+                    }
                     task.isCompleted.toggle()
                 } label: {
                     Circle()
@@ -44,6 +50,8 @@ struct ContentView: View {
                     .strikethrough(task.isCompleted)
             }
         }
+        
+        Text("Completed: \(completedNum)")
     }
 }
 
